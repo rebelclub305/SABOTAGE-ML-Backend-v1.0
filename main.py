@@ -540,6 +540,20 @@ async def close_operation(op_id: int, body: CloseOp):
 
     return {"status": "closed", "retrain": retrain_info}
 
+# ── Borrar memoria ML de un usuario ─────────────────────────────
+@app.delete("/operations/{uid}")
+async def delete_operations(uid: str, symbol: Optional[str] = None):
+    conn = get_db()
+    if symbol:
+        conn.execute("DELETE FROM operations WHERE uid=? AND symbol=?", (uid, symbol.upper()))
+        conn.execute("DELETE FROM models WHERE uid=? AND symbol=?", (uid, symbol.upper()))
+    else:
+        conn.execute("DELETE FROM operations WHERE uid=?", (uid,))
+        conn.execute("DELETE FROM models WHERE uid=?", (uid,))
+    conn.commit()
+    conn.close()
+    return {"status": "deleted", "uid": uid, "symbol": symbol}
+
 # ── Stats del modelo ML por usuario ──────────────────────────────
 @app.get("/ml/stats/{uid}")
 async def ml_stats(uid: str, symbol: str = "XAUUSD"):
