@@ -541,7 +541,7 @@ async def close_operation(op_id: int, body: CloseOp):
     return {"status": "closed", "retrain": retrain_info}
 
 # ── Borrar memoria ML de un usuario ─────────────────────────────
-@app.delete("/operations/{uid}")
+@app.post("/operations/{uid}/clear")
 async def delete_operations(uid: str, symbol: Optional[str] = None):
     conn = get_db()
     if symbol:
